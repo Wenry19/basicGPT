@@ -16,8 +16,3 @@
 ## Shakespeare
 
 - Dataset that we are going to use to train a small transformer-based language model.
-
-## nanoGPT
-
-- What we are going to implement to train/finetune medium-sized GPTs.
-- Character-level prediction (predict sequence of characters).
