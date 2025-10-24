@@ -32,3 +32,13 @@ if __name__ == '__main__':
     print('Encoded data shape:', data.shape, 'Encoded data type:', data.dtype, '\n')
 
     print('Sample input encoded text:\n', data[:200], '\n')
+
+    n = int(0.9*len(data))
+    train_data = data[:n]
+    val_data = data[n:]
+
+    print('Train length:', len(train_data))
+    print('Val length:', len(val_data), '\n')
+
+    torch.save(train_data, 'train_data.pt')
+    torch.save(val_data, 'val_data.pt')
