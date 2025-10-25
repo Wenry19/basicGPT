@@ -134,7 +134,7 @@ class Bigram:
         out = []
         i = self.stoi[context[-1]] # because it is a bigram model, we only care about the last character in the context
         while True:
-            p, _ = self.forward_pass_nn(xs=[i])
+            p, _ = self.forward_pass_nn(xs=torch.tensor([i]))
             # sample next character from corresponding distribution
             # generator for reproducibility
             i = torch.multinomial(p, num_samples=1, replacement=True, generator=generator).item()
@@ -215,7 +215,7 @@ def main_weights():
     model = Bigram()
     train_data = open('data/input.txt', 'r').read()
     g = torch.Generator().manual_seed(123)
-    model.train_nn(train_data=train_data, epochs=10, learning_rate=10, regularization=0.01, generator=g)
+    model.train_nn(train_data=train_data, epochs=10, learning_rate=50, regularization=0.01, generator=g)
     
     input = 'hello'
 
