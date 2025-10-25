@@ -127,7 +127,7 @@ class Bigram:
             # update
             self.W.data += -learning_rate * self.W.grad # gradient descent
 
-            print('Loss:', loss)
+            print('Loss:', loss.item())
     
     def infer_nn(self, context: str, generator: torch.Generator = None):
 
@@ -219,14 +219,14 @@ def main_weights():
     
     input = 'hello'
 
-    print('Loss value of all training set:', model.calc_loss_given_data_nn(train_data).item())
+    print('Loss value of all training set:', model.calc_loss_given_data_nn(data=train_data, regularization=0.01).item())
     print('Input:', input)
 
     print('----')
     for _ in range(10):
         output_data = model.infer_nn(input, g)
         print('Output:', output_data)
-        print('Loss value for above output:', model.calc_loss_given_data_nn(output_data).item())
+        print('Loss value for above output:', model.calc_loss_given_data_nn(data=output_data, regularization=0.01).item())
         print('----')
 
 if __name__ == '__main__':
