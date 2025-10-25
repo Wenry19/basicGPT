@@ -93,7 +93,7 @@ class Bigram:
 
     # NN APPROACH (1 linear layer of len(self.vocab) neurons)
 
-    def train_nn(self, train_data: str, epochs: int, learning_rate: float, regularization: float,  generator: torch.Generator = None):
+    def train_nn(self, train_data: str, epochs: int, learning_rate: float, regularization: float,  generator: torch.Generator = None, random_init_weights: bool = True):
 
         self.extract_info_from_train_data(train_data)
 
@@ -108,10 +108,11 @@ class Bigram:
         xs = torch.tensor(xs) # batch of inputs
         ys = torch.tensor(ys) # batch of labels
 
-        # random initialization of weights
-        # see explanation of self.W shape in self.forward_pass_nn function
-        self.W = torch.randn((len(self.vocab), len(self.vocab)), generator=generator, requires_grad=True) # returns a tensor filled with random numbers from a standard normal distribution
-        # 'requires_grad' important for backpropagation!
+        if random_init_weights:
+            # random initialization of weights
+            # see explanation of self.W shape in self.forward_pass_nn function
+            self.W = torch.randn((len(self.vocab), len(self.vocab)), generator=generator, requires_grad=True) # returns a tensor filled with random numbers from a standard normal distribution
+            # 'requires_grad' important for backpropagation!
 
         for e in range(epochs):
 
