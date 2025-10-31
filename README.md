@@ -1,5 +1,5 @@
-# basicGPT
+# Language Models From Scratch
 
-Implementation of basic GPT architecture.
+Implementation of Language Models from scratch.
 
-Based on [this tutorial](https://youtu.be/kCc8FmEb1nY?si=IbprTu6roAAj6ZH1).
+Based on tutorials in this [channel](https://www.youtube.com/@AndrejKarpathy).
