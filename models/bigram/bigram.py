@@ -2,6 +2,8 @@
 import torch
 import torch.nn.functional as F
 
+from utils.utils import extract_info_from_train_data
+
 class Bigram:
 
     vocab: list = None # vocabulary
@@ -14,16 +16,11 @@ class Bigram:
     def __init__(self, ):
         pass
 
-    def extract_info_from_train_data(self, train_data):
-        self.vocab = sorted(list(set(train_data)))
-        self.stoi = {s:i for i,s in enumerate(self.vocab)}
-        self.itos = {i:s for s,i in self.stoi.items()}
-
     # COUNTS APPROACH
 
     def train_counts(self, train_data: str, smoothing: int):
 
-        self.extract_info_from_train_data(train_data)
+        self.vocab, self.stoi, self.itos = extract_info_from_train_data(train_data)
 
         # N is a table of len(self.vocab) * len(self.vocab), where rows represent a character and columns the following character
         # in each position of the table there is stored how many times the character 'row' is followed by the character 'col' in the train set
@@ -93,27 +90,27 @@ class Bigram:
 
     # NN APPROACH (1 linear layer of len(self.vocab) neurons)
 
-    def train_nn(self, train_data: str, epochs: int, learning_rate: float, regularization: float,  generator: torch.Generator = None, random_init_weights: bool = True):
+    def train_nn(self, train_data: str, epochs: int, learning_rate: float, regularization: float,  generator: torch.Generator = None, random_init: bool = True):
 
-        self.extract_info_from_train_data(train_data)
-
-        xs, ys = [], [] # x is first character (input) and y second character (label)
-
-        for ch1, ch2 in zip(train_data, train_data[1:]):
-            i1 = self.stoi[ch1]
-            i2 = self.stoi[ch2]
-            xs.append(i1)
-            ys.append(i2)
-
-        xs = torch.tensor(xs) # batch of inputs
-        ys = torch.tensor(ys) # batch of labels
-
-        if random_init_weights:
+        # initialize everything
+        if random_init:
+            self.vocab, self.stoi, self.itos = extract_info_from_train_data(train_data)
             # random initialization of weights
             # see explanation of self.W shape in self.forward_pass_nn function
             self.W = torch.randn((len(self.vocab), len(self.vocab)), generator=generator, requires_grad=True) # returns a tensor filled with random numbers from a standard normal distribution
             # 'requires_grad' important for backpropagation!
 
+        # data
+        xs, ys = [], [] # x is first character (input) and y second character (label)
+        for ch1, ch2 in zip(train_data, train_data[1:]):
+            i1 = self.stoi[ch1]
+            i2 = self.stoi[ch2]
+            xs.append(i1)
+            ys.append(i2)
+        xs = torch.tensor(xs) # batch of inputs
+        ys = torch.tensor(ys) # batch of labels
+
+        # training
         for e in range(epochs):
 
             print('---- Epoch {} ----'.format(e))
@@ -183,7 +180,7 @@ class Bigram:
         counts = logits.exp() # counts, equivalent to N
         probs = counts / counts.sum(1, keepdims=True) # probabilities for next character
 
-        if not ys == None and not regularization == None:
+        if not ys is None and not regularization is None:
             # vectorized loss (average negative log likelihood) + regularization (equivalent as smoothing)
             loss = -probs[torch.arange(len(xs)), ys].log().mean() + regularization*(self.W**2).mean()
             # regularization note: if self.W all 0s -> we get a uniform distribution in output, that's why we can see regularization as smoothing
